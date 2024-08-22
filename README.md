@@ -7,14 +7,14 @@
 * 详细的白名单数据，包括担保人、时间、备注、和添加它的操作人员；
 * 删除白名单后仍可查询其添加白名单的时间与删除白名单的时间及理由；
 * 支持通过 正版验证/第三方API自验证 请求玩家数据；
-* 更加贴近原版 Minecraft Server 的 Whitelist 输出；
+* 更加贴近原版 Minecraft Server 的 Whitelist 机制和输出；
 * 其它基本元数据。
 
 ## 变化
 
 * 基于 NLKWhitelist 完全重写；
 * 仅支持Velocity；
-* 支持使用 正版验证/第三方API自验证 验证UUID并存入数据，更加贴近原版 Minecraft Server 提供的 Whitelist 功能；
+* 支持使用 正版验证/第三方API自验证 验证UUID并存入数据，更加贴近原版 Minecraft Server 提供的 Whitelist 机制和输出；
 * 更优雅的输出和指令系统；
 * 对 NLKWhitelist 的屎山进行重写，并堆出了另一个屎山.d
 
