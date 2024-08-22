@@ -1,0 +1,32 @@
+{
+  "id": "nlkwhitelistx",
+  "name": "NLKWhitelistX",
+  "version": "1.2.0",
+  "description": "A whitelist plugin for Velocity",
+  "authors": ["leitingsd"],
+  "dependencies": [
+    {
+      "id": "velocity",
+      "optional": false
+    }
+  ],
+  "main": "com.leitingsd.plugins.nlkwhitelistx.NLKWhitelistX",
+  "commands": {
+    "wlquery": {
+      "aliases": ["query", "wq"],
+      "suggestions": ["all", "whitelist", "lot"]
+    },
+    "wladd": {
+      "aliases": ["add"],
+      "suggestions": []
+    },
+    "wlremove": {
+      "aliases": ["remove"],
+      "suggestions": []
+    },
+    "wl": {
+      "aliases": [],
+      "suggestions": []
+    }
+  }
+}
