@@ -1,7 +1,7 @@
 {
   "id": "nlkwhitelistx",
   "name": "NLKWhitelistX",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A whitelist plugin for Velocity",
   "authors": ["leitingsd"],
   "dependencies": [
@@ -30,3 +30,4 @@
     }
   }
 }
+
