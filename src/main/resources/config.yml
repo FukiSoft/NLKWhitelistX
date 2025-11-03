@@ -1,5 +1,5 @@
 # NLKWhitelistX
-# Version: 1.2.0
+# Version: 1.2.1
 
 # 配置MySQL数据库
 database:
@@ -18,7 +18,8 @@ database:
 
 # 配置API选择项
 api:
-  useMojangAPI: false        # 如果设置为true，将使用Mojang API，否则使用第三方API
+  useMojangAPI: true
+  # 如果设置为 false，使用第三方API，默认值为 true 使用Mojang API，
   thirdPartyAPI: "https://api.mojang.com/users/profiles/minecraft/{username}"
   # 此处默认设置为Mojang API，用于请求正版玩家的UUID数据；
   # 如果不使用Mojang API，请在此输入第三方API的URL，例如：https://api.example.com/users/profiles/{username}
@@ -80,14 +81,14 @@ messages:
     &7一个基于Velocity的白名单插件。
     
     &f可用命令:
-    &f/wl - &7显示插件信息及可用命令列表
-    &f/wladd <玩家ID> <担保人（若无请填 Unknown 或 -）> <审核批次号> <备注> - &7添加玩家到白名单
-    &f/wlremove <玩家ID> <删除原因> - &7从白名单中移除玩家
-    &f/wlquery <玩家ID> - &7查询玩家的白名单状态
-    &f/wlquery lot <批次号> - &7查询同一批次的所有玩家
-    &f/wlquery whitelist - &7查询所有白名单玩家
-    &f/wlquery all - &7查询所有记录内玩家（包括已移除白名单的玩家）
-
+    &f/wl &7| &f/wl help &7- 显示插件信息及可用命令列表
+    &f/wl add <玩家ID> <担保人（若无请填 Unknown 或 -）> <审核批次号> <备注> &7- 添加玩家到白名单
+    &f/wl remove <玩家ID> <删除原因> &7- 从白名单中移除玩家
+    &f/wl query <玩家ID>   &7- 查询单个玩家的数据
+    &f/wl query lot <审核批次号>  &7- 查询同一批次玩家的数据
+    &f/wl query list (-full)  &7- 查询所有白名单玩家的数据（可添加 -full 选项输出更详细的数据）
+    &f/wl query all (-full)  &7- 查询数据库内所有玩家的数据，包括已被移除白名单的玩家（可添加 -full 选项输出更详细的数据）
+    &f/wl reload &7- 重载插件
 
 # 在 wlquery-entry 中，所有占位符代表意义如下：
 #  {0} 数据库中的序列号
@@ -102,3 +103,4 @@ messages:
 #  {9} 删除于
 #  {10} 删除操作员
 #  {11} 删除原因
+
