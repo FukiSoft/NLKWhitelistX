@@ -33,18 +33,16 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
-
-
 @Plugin(
         id = "nlkwhitelistx",
         name = "NLKWhitelistX",
-        version = "1.2.0",
+        version = "1.2.1",
         description = "A whitelist plugin for Velocity",
         authors = {"leitingsd"}
 )
 public class NLKWhitelistX {
 
-    private static final String PLUGIN_VERSION = "1.2.0";
+    private static final String PLUGIN_VERSION = "1.2.1";
     private final ProxyServer server;
     private final Logger logger;
     private final Path dataDirectory;
@@ -92,8 +90,24 @@ public class NLKWhitelistX {
                 Map<String, Object> config = yaml.load(input);
                 databaseManager.init((Map<String, Object>) config.get("database"));
                 messages = (Map<String, String>) config.get("messages");
-                useMojangAPI = (boolean) config.getOrDefault("api.useMojangAPI", true);
-                thirdPartyAPI = (String) config.getOrDefault("api.thirdPartyAPI", "");
+                // 修复api.config传参错误导致返回null从而使布尔值默认传递ture
+                Map<String, Object> apiConfig = (Map<String, Object>) config.get("api");
+                if (apiConfig != null) {
+                    Object useMojangAPIObj = apiConfig.get("useMojangAPI");
+                    if (useMojangAPIObj instanceof Boolean ) {
+                        useMojangAPI = (Boolean) useMojangAPIObj;
+                    } else if (useMojangAPIObj instanceof String) {
+                        useMojangAPI = Boolean.parseBoolean((String) useMojangAPIObj);
+                    } else {
+                        useMojangAPI = true;  // 默认情况下使用MojangAPI
+                    }
+
+                    Object thirdPartyAPIObj = apiConfig.get("thirdPartyAPI");
+                    thirdPartyAPI = thirdPartyAPIObj !=null ? thirdPartyAPIObj.toString() : "";
+                } else {
+                    useMojangAPI = true;
+                    thirdPartyAPI = "";
+                }
 
                 // 打印调试信息
                 logger.info("useMojangAPI: " + useMojangAPI);
@@ -103,7 +117,6 @@ public class NLKWhitelistX {
             logger.error("无法加载配置文件", e);
         }
     }
-
 
     private void registerCommands() {
         server.getCommandManager().register(server.getCommandManager().metaBuilder("wl").build(), new WlMainCommand(this));
@@ -116,7 +129,6 @@ public class NLKWhitelistX {
             eventManager.register(pluginContainer, new WhitelistListener(whitelistManager, logger));
         });
     }
-
 
     public ProxyServer getServer() {
         return server;
@@ -141,8 +153,7 @@ public class NLKWhitelistX {
     public String getMessage(String key, Object... args) {
         String message = messages.getOrDefault(key, "未知消息键: " + key);
         message = message.replace("{version}", PLUGIN_VERSION);
-//        message = message.replace('&', '§');
-//        return MessageFormat.format(message, args);
+
         // 判断输出是游戏内还是控制台
         // 使用 '&' 作为颜色代码的标识符，并在输出到玩家时替换为 '§'
         String formattedMessage = MessageFormat.format(message, args);
@@ -155,8 +166,6 @@ public class NLKWhitelistX {
         return formattedMessage;
 
     }
-
-
 
     public boolean isUseMojangAPI() {
         return useMojangAPI;
