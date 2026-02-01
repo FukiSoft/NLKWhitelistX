@@ -1,5 +1,5 @@
 # NLKWhitelistX
-# Version: 1.2.1
+# Version: 1.3.0
 
 # 配置MySQL数据库
 database:
@@ -18,34 +18,50 @@ database:
 
 # 配置API选择项
 api:
-  useMojangAPI: true
-  # 如果设置为 false，使用第三方API，默认值为 true 使用Mojang API，
+  useMojangAPI: ture
+  # 如果设置为true，将使用Mojang API，否则使用第三方API
   thirdPartyAPI: "https://api.mojang.com/users/profiles/minecraft/{username}"
   # 此处默认设置为Mojang API，用于请求正版玩家的UUID数据；
   # 如果不使用Mojang API，请在此输入第三方API的URL，例如：https://api.example.com/users/profiles/{username}
 
-# 配置插件输出的消息
+# 管理员列表（指定用于接收API离线警告）
+admins:
+  - "AdminPlayer1"
+  - "AdminPlayer2"
+
 messages:
+  admin-api-warning: "&c[警告] 玩家 {0} 通过本地缓存验证进入服务器，当前 Mojang API 可能不可用。"
   not_whitelisted: "You are not whitelisted on this server."
   internal-error: "发生了一个内部错误：{0}"
+  fallback-kick-message: "&c白名单插件处于维护模式，暂时无法进入服务器，请联系管理员。"
   reject-join-no-whitelist: ":( 此 ID 还未处于白名单中"
   reject-join-incorrect-cases: "您正在使用 {0} 加入服务器，但您申请的白名单为 {1}，请保持用户名大小写一致"
-  wladd-bad-arguments: "参数错误：请使用 /wladd <玩家ID> <担保人（若无请填 - ）> <审核批次号（担保请填 000）> <白名单添加备注>"
+  api-missing: "&e未找到 'api' 配置段，已回退至默认设置（使用 Mojang API）"
+  api-thirdparty-missing: "配置错误: useMojangAPI=false 但未提供 thirdPartyAPI URL！"
+  api-using-thirdparty: "使用第三方 API: {0}"
+  api-using-mojang: "使用 Mojang 官方 API"
+  reject-join-api-error: "&e无法验证白名单状态，请稍后重试。"
+  reject-join-check-timeout: "&e白名单验证失败，请稍后再试。"
+  reject-join-internal-error: "&c服务器内部错误，请联系管理员。"
+  wladd-bad-arguments: "参数错误：请使用 /wl add <玩家ID> <担保人（若无请填 - ）> <审核批次号（担保请填 000）> <白名单添加备注>"
   wladd-success: "玩家 {0} (ID: {1}) 已成功添加到白名单。"
   wladd-uuid-not-found: "无法找到玩家 {0} 的 UUID，添加白名单失败。"
   wladd-uuid-timeout: "获取玩家 {0} 的 UUID 超时，添加白名单失败。"
-  wladd-error-no-updates: "添加失败，此玩家可能已经在白名单中。请使用 /wlquery <玩家ID> 查询白名单详情。"
-  wlremove-bad-arguments: "参数错误：请使用 /wlremove <玩家ID> <删除原因>"
+  wladd-error-no-updates: "添加失败，此玩家可能已经在白名单中。请使用 /wl query <玩家ID> 查询白名单详情。"
+  wlremove-bad-arguments: "参数错误：请使用 /wl remove <玩家ID> <删除原因>"
   wlremove-error-no-updates: "删除失败，未找到与指定玩家 ID 对应的白名单记录。"
   wlremove-success: "玩家 {0} 已成功从白名单中移除。"
-  wlquery-bad-arguments: "参数错误：请使用 /wlquery <玩家ID> 或通过 /wl 查询详细语法"
+  wlquery-bad-arguments: "参数错误：请使用 /wl query <玩家ID> 或通过 /wl 查询详细语法"
   wlquery-entry: |
-    序列号: {0} - UUID: {1} - 玩家ID：{2}
+    ===== NLKWhitelistX 查询结果 =====
+    序号: {0} - UUID: {1} 
+    玩家ID：{2}
     添加时间：{3}
     担保人：{4} 操作员：{5}
     审核批次号：{6}
     描述：{7}
     曾用ID：{8}
+    ===== 如果其已被删除 =====
     删除于：{9} 删除操作员：{10}
     删除原因：{11}
   wlquery-entry-simple: |
@@ -73,9 +89,13 @@ messages:
   delete-time: "删除时间：{0}"
   wlreload-success: "配置文件已成功重新加载。"
   wlreload-failure: "配置文件重新加载失败，请检查控制台的错误日志。"
-  no-permission: "&c你没有权限执行此命令: {0}"
+  no-permission: "&c你没有权限执行此命令"
   # 描述
   unknown-command: "&c未知命令: {0}，请使用 /wl 查询详细语法"
+  wlcheck-usage: "&c用法: /wl check <玩家ID>"
+  wlcheck-success: "&a查询结果如下：玩家ID：“{0}”，UUID：“{1}”"
+  wlcheck-error: "&c未查询到该玩家"
+
   wl-command: |
     &lNLKWhitelistX &7- 版本 {version}
     &7一个基于Velocity的白名单插件。
@@ -88,7 +108,9 @@ messages:
     &f/wl query lot <审核批次号>  &7- 查询同一批次玩家的数据
     &f/wl query list (-full)  &7- 查询所有白名单玩家的数据（可添加 -full 选项输出更详细的数据）
     &f/wl query all (-full)  &7- 查询数据库内所有玩家的数据，包括已被移除白名单的玩家（可添加 -full 选项输出更详细的数据）
+    &f/wl check <玩家ID> &7- 调用 Mojang API 查询玩家数据
     &f/wl reload &7- 重载插件
+
 
 # 在 wlquery-entry 中，所有占位符代表意义如下：
 #  {0} 数据库中的序列号
@@ -103,4 +125,3 @@ messages:
 #  {9} 删除于
 #  {10} 删除操作员
 #  {11} 删除原因
-
