@@ -72,12 +72,10 @@ public class NLKWhitelistX {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        // Initialize database manager
         databaseManager = new DatabaseManager(this);
 
         try {
             loadConfig();
-            // loadConfig 现在会抛出异常如果数据库初始化失败，所以这里的 isConnected 检查可能多余，但保留无害
             if (!databaseManager.isConnected()) {
                 throw new IllegalStateException("数据库未完成初始化");
             }
